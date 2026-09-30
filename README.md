@@ -69,13 +69,17 @@ Las reglas de negocio del sistema se clasifican según su necesidad de acceso a 
 
 1. **Reglas con apoyo del Repository:** La validación de solapamiento requiere comparar la solicitud entrante contra reservas previamente guardadas. Al depender del estado global persistido, es indispensable apoyarse en el `Repository`.
 
-2. **Reglas sin apoyo del Repository (Java puro):** La validación de horario de atención (07:00 a 21:00) y de duración (entre 30 minutos y 3 horas) vive enteramente en el método `validarHorarioDuracion` de `ReservaService`. Dado que estas reglas dependen únicamente de los atributos del propio objeto `Reserva` (`inicio` y `fin`), no hay razón para consultar la base de datos.
+2. **Reglas sin apoyo del Repository (Java puro):** La validación de horario de atención (07:00 a 21:00) y de duración (entre 30 minutos y 3 horas) vive enteramente en el método `validarHorarioYDuracion` de `ReservaService`. Dado que estas reglas dependen únicamente de los atributos del propio objeto `Reserva` (`inicio` y `fin`), no hay razón para consultar la base de datos.Estas reglas lanzan ReservaInvalidaException (HTTP 400 en la API REST), mientras que el solapamiento lanza ReservaConflictException (HTTP 409).
 
 #### Criterio general
 
 > Si una regla requiere consultar el estado de otros registros en el sistema, se apoya en el `Repository`.
 >
 > Si depende únicamente de las propiedades de la entidad que se está recibiendo, se valida en memoria dentro del `Service`.
+
+#### Nota sobre LaboratorioController
+
+Es la única excepción a "el Controller no toca el Repository": el catálogo de laboratorios es un CRUD sin reglas de negocio. Crear un `LaboratorioService` que solo delegue sería un Service anémico. Se introduce una capa Service solo cuando hay una regla que la justifique, no por seguir la plantilla de forma mecánica.
 
 ---
 
@@ -93,6 +97,8 @@ Ninguno de los dos controladores reimplementa las validaciones de solapamiento n
 
   La capa `Service` existe precisamente para centralizar el dominio y ser reutilizada por múltiples capas de presentación.
 
+Ver ReservaController.java (línea 15) y ReservaWebController.java (línea 15): ambos reciben ReservaService por constructor.
+
 ---
 
 ### Punto de decisión 4: Manejo de errores consistente entre MVC y REST
@@ -108,7 +114,7 @@ Se implementaron dos manejadores de excepciones separados mediante `@ControllerA
 
   Intentar detectar el encabezado `Accept` dentro de un único manejador añadiría condicionales innecesarios.
 
-  Separar los manejadores según el tipo de controlador mantiene la responsabilidad única de cada capa de presentación, utilizando un único vocabulario de excepciones de dominio (`ReservaConflictException`, `RecursoNoEncontradoException`).
+  Separar los manejadores según el tipo de controlador mantiene la responsabilidad única de cada capa de presentación, utilizando un único vocabulario de excepciones de dominio (`ReservaConflictException`, `RecursoNoEncontradoException`, `ReservaInvalidaException`).
 
 # Herramientas utilizadas
 
@@ -123,8 +129,13 @@ Se implementaron dos manejadores de excepciones separados mediante `@ControllerA
 
 ### Pasos de Ejecución
 1. Compilar el proyecto:
-   ```bash
+```bash
    ./mvnw clean package
+```
+2. Ejecutar la aplicación:
+```bash
+   ./mvnw spring-boot:run
+```
 
 ## URLs de Acceso
 
