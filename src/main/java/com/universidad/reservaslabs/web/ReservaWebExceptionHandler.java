@@ -2,6 +2,7 @@ package com.universidad.reservaslabs.web;
 
 import com.universidad.reservaslabs.exception.RecursoNoEncontradoException;
 import com.universidad.reservaslabs.exception.ReservaConflictException;
+import com.universidad.reservaslabs.exception.ReservaInvalidaException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -19,5 +20,11 @@ public class ReservaWebExceptionHandler {
     public String noEncontrado(RecursoNoEncontradoException ex, RedirectAttributes redirect) {
         redirect.addFlashAttribute("error", ex.getMessage());
         return "redirect:/reservas";
+    }
+
+    @ExceptionHandler(ReservaInvalidaException.class)
+    public String invalida(ReservaInvalidaException ex, RedirectAttributes redirect) {
+        redirect.addFlashAttribute("error", ex.getMessage());
+        return "redirect:/reservas/nueva";
     }
 }
