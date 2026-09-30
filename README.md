@@ -8,6 +8,45 @@ la reserva de laboratorios de cómputo, con dos partes: una API REST
 en capas (Entity, Repository, Service, Controller) sobre H2, y una
 vista Thymeleaf (MVC clásico) que reutiliza el mismo Service.
 
+## Arquitectura en Capas
+
+El proyecto implementa una arquitectura limpia por capas desacopladas:
+
+- **`model/`**: Entidades JPA (`Laboratorio`, `Reserva`) y enums de dominio (`EstadoReserva`).
+- **`repository/`**: Interfaces Spring Data JPA (`LaboratorioRepository` y `ReservaRepository` con consultas JPQL personalizadas como `buscarSolapamientos`).
+- **`service/`**: Lógica de negocio centralizada (`ReservaService`), responsable de las validaciones de horario, duración, solapamiento y políticas de cancelación.
+- **`exception/`**: Excepciones de dominio personalizadas (`ReservaInvalidaException`, `ReservaConflictException`, `RecursoNoEncontradoException`) y manejadores globales de excepciones.
+- **`controller/`**: Controladores REST para la API JSON (`LaboratorioController`, `ReservaController`).
+- **`web/`**: Controlador MVC (`ReservaWebController`) y su manejador de errores web (`ReservaWebExceptionHandler`) para vistas Thymeleaf.
+
+---
+
+## Endpoints REST
+
+### Laboratorios (`/api/laboratorios`)
+- `GET /api/laboratorios` - Listar todos los laboratorios.
+- `POST /api/laboratorios` - Registrar un nuevo laboratorio.
+- `GET /api/laboratorios/{id}` - Obtener laboratorio por ID.
+
+### Reservas (`/api/reservas`)
+- `GET /api/reservas` - Listar todas las reservas.
+- `POST /api/reservas` - Crear una nueva reserva (valida horario, duración y solapamientos).
+- `GET /api/reservas/{id}` - Obtener detalle de una reserva.
+- `GET /api/reservas/laboratorio/{id}` - Listar reservas asociadas a un laboratorio específico.
+- `DELETE /api/reservas/{id}` - Cancelar una reserva existente.
+
+---
+
+## Rutas MVC (Thymeleaf)
+
+- `GET /reservas` - Vista principal con la lista de reservas registradas.
+- `GET /reservas/nueva` - Formulario web para solicitar una nueva reserva.
+- `POST /reservas` - Procesar la creación de una reserva desde la interfaz web.
+- `POST /reservas/{id}/cancelar` - Acción para cancelar una reserva desde la lista.
+
+---
+
+
 
 # Decisiones de diseño
 ## Parte 1 — Repository, Service y Controller REST
@@ -75,6 +114,26 @@ Se implementaron dos manejadores de excepciones separados mediante `@ControllerA
 
 - **Java 17, Spring Boot 3.2, Spring Data JPA, H2, Thymeleaf**
 - **Apache Maven, Postman/curl, Git, GitHub**
+
+## Cómo Ejecutar el Proyecto
+
+### Requisitos Previos
+- Java 17 o superior.
+- Maven 3.8+ (o el wrapper incluido `mvnw`).
+
+### Pasos de Ejecución
+1. Compilar el proyecto:
+   ```bash
+   ./mvnw clean package
+
+## URLs de Acceso
+
+- **API REST Base**: `http://localhost:8080/api/reservas`
+- **Interfaz Web (MVC)**: `http://localhost:8080/reservas`
+- **Consola H2**: `http://localhost:8080/h2-console`
+  - **JDBC URL**: `jdbc:h2:mem:reservas_labs_db`
+  - **User**: `sa`
+  - **Password**: *(en blanco)*
 
 
 # Conclusiones
