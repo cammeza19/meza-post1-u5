@@ -103,3 +103,14 @@ Además, la reutilización de `ReservaService` tanto por la API REST como por la
 
 * **Error de solapamiento en vista Web (Redirección con mensaje en rojo):**
   ![Error Solapamiento Web](./capturas/mvc_error_solapamiento.jpeg)
+
+## Evidencias de Funcionamiento
+
+* **API REST - Error 400 Bad Request**
+![Error 400 Bad Request](./capturas/rest_error_400.jpeg)
+
+* **Vista Web - Cancelación de Reserva**
+![Cancelación de Reserva Web](./capturas/mvc_cancelar.jpeg)
+
+* **Base de Datos - Consola H2**
+![Consola H2](./capturas/h2_console.jpeg)
