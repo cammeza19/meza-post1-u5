@@ -69,7 +69,7 @@ Las reglas de negocio del sistema se clasifican según su necesidad de acceso a 
 
 1. **Reglas con apoyo del Repository:** La validación de solapamiento requiere comparar la solicitud entrante contra reservas previamente guardadas. Al depender del estado global persistido, es indispensable apoyarse en el `Repository`.
 
-2. **Reglas sin apoyo del Repository (Java puro):** La validación de horario de atención (07:00 a 21:00) y de duración (entre 30 minutos y 3 horas) vive enteramente en el método `validarHorarioYDuracion` de `ReservaService`. Dado que estas reglas dependen únicamente de los atributos del propio objeto `Reserva` (`inicio` y `fin`), no hay razón para consultar la base de datos.Estas reglas lanzan ReservaInvalidaException (HTTP 400 en la API REST), mientras que el solapamiento lanza ReservaConflictException (HTTP 409).
+2. **Reglas sin apoyo del Repository (Java puro):** La validación de horario de atención (07:00 a 21:00) y de duración (entre 30 minutos y 3 horas) vive enteramente en el método `validarHorarioYDuracion` de `ReservaService`. Dado que estas reglas dependen únicamente de los atributos del propio objeto `Reserva` (`inicio` y `fin`), no hay razón para consultar la base de datos. Estas reglas lanzan ReservaInvalidaException (HTTP 400 en la API REST), mientras que el solapamiento lanza ReservaConflictException (HTTP 409).
 
 #### Criterio general
 
